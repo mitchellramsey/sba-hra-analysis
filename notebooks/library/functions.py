@@ -19,7 +19,7 @@ def groupbySummary(df, target, col):
   """
   Takes df and groups by target categorical variable and displays the following summary statistics for the col continuous variable: max, min, median, mean, std, 25th quantile, 75th quantile, 95th quantile, and the 99th quantile. 
   """
-  return df.groupby(target)[col].agg([np.max, np.min, np.mean, np.std, q25, q75, q95, q99])
+  return df.groupby(target)[col].agg(Max=np.max, Min=np.min, Mean=np.mean, Std=np.std, Q25=q25, Q75=q75, Q95=q95, Q99=q99)
 
 def groupbyCounts(df, target, col):
   """
