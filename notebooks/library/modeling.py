@@ -57,7 +57,7 @@ def createFeatureImportanceChart(model, params, labels, x_train, y_train, rs=42)
   mod.fit(x_train, y_train)
 
   feature_importance = mod.feature_importances_
-  feature_importance - 100.0 * (feature_importance / feature_importance.max())
+  feature_importance = 100.0 * (feature_importance / feature_importance.max())
   sorted_idx = np.argsort(feature_importance)
 
   pos = np.arange(sorted_idx.shape[0]) + .5
