@@ -1,0 +1,62 @@
+{
+    "Logistic Regression": {
+        "Grid Search": {
+            "Standard": {
+                "C": 0.001,
+                "fit_intercept": false,
+                "penalty": "none",
+                "solver": "saga"
+            },
+            "Robust": {
+                "C": 0.001,
+                "fit_intercept": false,
+                "penalty": "l1",
+                "solver": "saga"
+            }
+        },
+        "Bayesian Optimization": {
+            "Standard": {
+                "C": 31.567897812394946,
+                "fit_intercept": false,
+                "penalty": "l2",
+                "solver": "saga"
+            },
+            "Robust": {
+                "C": 37.454637344617396,
+                "fit_intercept": false,
+                "penalty": "l1",
+                "solver": "saga"
+            }
+        }
+    },
+    "Random Forest": {
+        "Grid Search": {
+            "Standard": {},
+            "Robust": {}
+        },
+        "Bayesian Optimization": {
+            "Standard": {},
+            "Robust": {}
+        }
+    },
+    "XGBoost": {
+        "Grid Search": {
+            "Standard": {},
+            "Robust": {}
+        },
+        "Bayesian Optimization": {
+            "Standard": {},
+            "Robust": {}
+        }
+    },
+    "CatBoost": {
+        "Grid Search": {
+            "Standard": {},
+            "Robust": {}
+        },
+        "Bayesian Optimization": {
+            "Standard": {},
+            "Robust": {}
+        }
+    }
+}
