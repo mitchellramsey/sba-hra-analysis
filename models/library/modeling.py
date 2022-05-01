@@ -4,7 +4,10 @@ import numpy as np
 from sklearn.metrics import (classification_report, accuracy_score, f1_score, 
                              matthews_corrcoef, confusion_matrix, roc_curve,
                              roc_auc_score)
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, cross_val_score
+from bayes_opt import BayesianOptimization
+from bayes_opt.logger import JSONLogger
+from bayes_opt.event import Events
 
 def createModel(model, X_train, y_train, X_test):
   """
@@ -57,14 +60,13 @@ def createConfusionMatrix(y_test, y_pred, mod_info):
   plt.show()
   return matrix
 
-def createFeatureImportanceChart(model, params, labels, x_train, y_train, rs=42):
+def createFeatureImportanceChart(model, labels, x_train, y_train):
   """
-    Creates and displays feature importance chart for a model. Requires uninitialized model, param object, labels for graph,x_train, and y_train datasets. Optional random state variable may also be passed into function. 42 is default. Function does not return anything.
+    Creates and displays feature importance chart for a model. Requires initialized model, labels for graph,x_train, and y_train datasets. Function does not return anything.
   """
-  mod = model(**params, random_state=rs)
-  mod.fit(x_train, y_train)
+  model.fit(x_train, y_train)
 
-  feature_importance = mod.feature_importances_
+  feature_importance = model.feature_importances_
   feature_importance = 100.0 * (feature_importance / feature_importance.max())
   sorted_idx = np.argsort(feature_importance)
 
@@ -110,3 +112,53 @@ def drawRocCurve(model, X_train, X_test, y_train, y_test, mod_info):
     plt.title('{} ROC Curve using {} and {} Scaler'.format(mod_info['model'], mod_info['method'], mod_info['scaler']))
 
     return auc
+
+def obtain_best_bayes_model(model, X_train, y_train, 
+                            discrete_grid, search_space, constants={}):
+    """
+    
+    """
+    
+    def reclassify_params(params):
+        """
+        
+        """
+        for param in params:
+            if param in discrete_grid:
+                index = round(params[param])
+                params[param] = discrete_grid[param][index]
+        for constant in constants:
+            params[constant] = constants[constant]
+        
+        return params
+    
+    def optimizer_func(**params):
+        """
+        
+        """
+        params = reclassify_params(params)
+        
+        scores = cross_val_score(model(**params, random_state=42),
+                                 X_train,
+                                 y_train,
+                                 scoring='f1',
+                                 cv=5
+                                ).mean()
+        return scores.mean()
+    
+    opt = BayesianOptimization(
+        f=optimizer_func,
+        pbounds=search_space,
+        random_state=42,
+        verbose=2
+    )
+    
+    # USED FOR TESTING PURPOSES ONLY
+    #logger = JSONLogger(path='./lgr_opt.json')
+    #opt.subscribe(Events.OPTIMIZATION_STEP, logger)
+    
+    opt.maximize(init_points=5, n_iter=10)
+    
+    best_params = opt.max['params']
+    best_params = reclassify_params(best_params)
+    return best_params
